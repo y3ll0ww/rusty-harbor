@@ -1,0 +1,9 @@
+[workspace]
+members = [
+    "query_url",
+    "rusty_harbor",
+]
+
+[workspace.dependencies]
+query_url = { path = "query_url" }
+rusty_harbor = { path = "rusty_harbor" }
