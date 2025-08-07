@@ -120,7 +120,7 @@ pub struct ProjectArtifacts {
 }
 
 impl ProjectArtifacts {
-    pub fn new(project_name_or_id: impl Into<String>) -> ProjectArtifactsBuilder {
+    pub fn builder(project_name_or_id: impl Into<String>) -> ProjectArtifactsBuilder {
         ProjectArtifactsBuilder::default().project_name_or_id(project_name_or_id)
     }
 }
@@ -167,7 +167,7 @@ pub struct Projects {
 }
 
 impl Projects {
-    pub fn new() -> ProjectsBuilder {
+    pub fn builder() -> ProjectsBuilder {
         ProjectsBuilder::default()
     }
 }

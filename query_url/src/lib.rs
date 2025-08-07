@@ -1,9 +1,9 @@
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
-use quote::{quote, format_ident};
-use syn::{parse_macro_input, DeriveInput, Lit};
+use quote::{format_ident, quote};
 use regex::Regex;
+use syn::{DeriveInput, Lit, parse_macro_input};
 
 #[proc_macro_derive(QueryUrl, attributes(query_url))]
 pub fn derive_query_url(input: TokenStream) -> TokenStream {
@@ -30,7 +30,8 @@ pub fn derive_query_url(input: TokenStream) -> TokenStream {
     let re = Regex::new(r"\{(\w+)\}").unwrap();
 
     // Find all field names inside {}
-    let placeholders: Vec<String> = re.captures_iter(&base_path)
+    let placeholders: Vec<String> = re
+        .captures_iter(&base_path)
         .map(|cap| cap[1].to_string())
         .collect();
 

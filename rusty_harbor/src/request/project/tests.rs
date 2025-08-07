@@ -1,6 +1,7 @@
-use crate::request::{project::get::{
-    Project, ProjectArtifacts, ProjectDeletable, ProjectSummary, Projects
-}, ToUrl};
+use crate::request::{
+    ToUrl,
+    project::get::{Project, ProjectArtifacts, ProjectDeletable, ProjectSummary, Projects},
+};
 
 const PROJECT_NAME: &str = "some-project-name";
 
@@ -46,7 +47,7 @@ fn get_project_artifacts() {
 
 #[test]
 fn get_project_artifacts_with_builder() {
-    let request = ProjectArtifacts::new(PROJECT_NAME)
+    let request = ProjectArtifacts::builder(PROJECT_NAME)
         .page(10)
         .with_scan_overview(true)
         .build()
@@ -72,7 +73,7 @@ fn get_projects_request() {
 
 #[test]
 fn get_projects_request_with_builder() {
-    let request = Projects::new()
+    let request = Projects::builder()
         .page(10)
         .page_size(100)
         .name("foobar")

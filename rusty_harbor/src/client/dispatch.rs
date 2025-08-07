@@ -33,7 +33,7 @@ impl HarborClient {
     ///
     /// It will form the API url using the [`base_url`](HarborClient::base_url) and the
     /// [`to_url`](ToUrl::to_url) function of the request of type `R`.
-    /// 
+    ///
     /// Then it sends the request using basic authorization with
     /// [`username`](HarborClient::username) and [`password`](HarborClient::password), check if the
     /// response is OK and (if so) deserialize it into type `T`.

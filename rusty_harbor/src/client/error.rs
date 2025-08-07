@@ -13,8 +13,5 @@ pub enum ClientError {
     Reqwest(#[from] reqwest::Error),
 
     #[error("error response ({status}): {message}")]
-    Response {
-        status: StatusCode,
-        message: String,
-    },
+    Response { status: StatusCode, message: String },
 }

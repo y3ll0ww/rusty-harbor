@@ -6,16 +6,19 @@ fn new_client() {
     println!("{}", client.username);
     println!("{}", client.password);
 
-    let client = HarborClient::default().unwrap();
+    let client = HarborClient::default();
     println!("{}", client.username);
     println!("{}", client.password);
 }
 
 #[tokio::test]
 async fn foo_bar() {
-    let client = HarborClient::default().unwrap();
+    let client = HarborClient::default();
 
-    let request = project::get::Projects::new().page_size(50).build().unwrap();
+    let request = project::get::Projects::builder()
+        .page_size(50)
+        .build()
+        .unwrap();
 
     let projects = client.get::<_, Vec<Project>>(request).await;
     assert!(projects.is_ok());
