@@ -1,4 +1,4 @@
-use crate::{client::HarborClient, request::project, response};
+use crate::{client::HarborClient, request::project, response::project::Project};
 
 #[test]
 fn new_client() {
@@ -17,12 +17,7 @@ async fn foo_bar() {
 
     let request = project::get::Projects::new().page_size(50).build().unwrap();
 
-    let response = client.get(request).await;
-    println!("{response:?}");
-    assert!(response.is_ok());
-
-    let text = response.unwrap().text().await.unwrap();
-    let deserialized = serde_json::from_str::<Vec<response::project::Project>>(&text);
-    println!("{deserialized:?}");
-    assert!(deserialized.is_ok());
+    let projects = client.get::<_, Vec<Project>>(request).await;
+    assert!(projects.is_ok());
+    println!("{:?}", projects.unwrap());
 }
