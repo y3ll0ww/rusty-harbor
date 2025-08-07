@@ -1,6 +1,6 @@
-use crate::request::project::get::{
+use crate::request::{project::get::{
     Project, ProjectArtifacts, ProjectDeletable, ProjectSummary, Projects
-};
+}, ToUrl};
 
 const PROJECT_NAME: &str = "some-project-name";
 

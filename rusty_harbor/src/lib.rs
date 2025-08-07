@@ -1,6 +1,7 @@
+pub mod client;
 pub mod request;
 pub mod response;
 
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+pub const HARBOR_HOST: &str = "HARBOR_HOST";
+pub const DEFAULT_USER: &str = "DEFAULT_USER";
+pub const DEFAULT_PASS: &str = "DEFAULT_PASS";

@@ -48,8 +48,8 @@ pub fn derive_query_url(input: TokenStream) -> TokenStream {
 
     // Generate the final impl with interpolated path
     let url_encoded = quote! {
-        impl #struct_name {
-            pub fn to_url(&self) -> String {
+        impl ToUrl for #struct_name {
+            fn to_url(&self) -> String {
                 let path = #replaced_path;
                 let query = ::serde_urlencoded::to_string(self).unwrap();
                 if query.is_empty() {

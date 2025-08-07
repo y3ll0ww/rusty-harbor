@@ -2,6 +2,8 @@ use derive_builder::Builder;
 use query_url::QueryUrl;
 use serde::Serialize;
 
+use crate::request::ToUrl;
+
 /// This endpoint returns specific project information by project ID.
 #[derive(QueryUrl, Serialize)]
 #[query_url(path = "projects/{project_name_or_id}")]
