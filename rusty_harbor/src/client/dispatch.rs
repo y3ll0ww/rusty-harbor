@@ -51,8 +51,7 @@ impl HarborClient {
             .request(method, url)
             .basic_auth(&self.username, Some(&self.password))
             .send()
-            .await
-            .map_err(ClientError::from)?;
+            .await?;
 
         // Get the status of the response
         let status = response.status();
