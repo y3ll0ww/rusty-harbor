@@ -3,7 +3,7 @@ use serde::de::DeserializeOwned;
 
 use crate::{
     client::{HarborClient, error::ClientError},
-    request::ToUrl,
+    request::HarborRequest,
 };
 
 /// This macro allows for custom implementations that call [`dispatch`](HarborClient::dispatch)
@@ -12,7 +12,7 @@ macro_rules! http_method_fn {
     ($name:ident, $method:expr) => {
         pub async fn $name<R, T>(&self, request: R) -> Result<T, ClientError>
         where
-            R: ToUrl,
+            R: HarborRequest,
             T: DeserializeOwned,
         {
             self.dispatch($method, request).await
@@ -39,7 +39,7 @@ impl HarborClient {
     /// response is OK and (if so) deserialize it into type `T`.
     async fn dispatch<R, T>(&self, method: Method, request: R) -> Result<T, ClientError>
     where
-        R: ToUrl,
+        R: HarborRequest,
         T: DeserializeOwned,
     {
         // Define the API url with the url encoded request

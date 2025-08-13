@@ -2,7 +2,7 @@ use derive_builder::Builder;
 use query_url::QueryUrl;
 use serde::Serialize;
 
-use crate::request::ToUrl;
+use crate::request::HarborRequest;
 
 /// This endpoint returns specific project information by project ID.
 #[derive(QueryUrl, Serialize)]

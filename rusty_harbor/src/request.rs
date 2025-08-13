@@ -1,5 +1,5 @@
 pub mod project;
 
-pub trait ToUrl {
+pub trait HarborRequest {
     fn to_url(&self) -> String;
 }

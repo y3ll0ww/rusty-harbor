@@ -1,5 +1,5 @@
 use crate::request::{
-    ToUrl,
+    HarborRequest,
     project::get::{GetProject, GetProjectArtifacts, GetProjectDeletable, GetProjectSummary, GetProjects},
 };
 
