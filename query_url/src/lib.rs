@@ -3,16 +3,19 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
 use regex::Regex;
-use syn::{DeriveInput, Lit, parse_macro_input};
+use syn::{DeriveInput, Lit, parse_macro_input, Type};
 
-#[proc_macro_derive(QueryUrl, attributes(query_url))]
+#[proc_macro_derive(QueryUrl, attributes(query_url, response))]
 pub fn derive_query_url(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let struct_name = &input.ident;
 
-    // Extract base path from attribute #[query_url(path = "...")]
     let mut base_path = String::new();
+    let mut response_type: Option<Type> = None;
+
+    // Extract base path from attribute
     for attr in &input.attrs {
+        // Handle #[query_url(path = "...")]
         if attr.path().is_ident("query_url") {
             let _ = attr.parse_nested_meta(|meta| {
                 if meta.path.is_ident("path") {
@@ -24,6 +27,14 @@ pub fn derive_query_url(input: TokenStream) -> TokenStream {
                 Ok(())
             });
         }
+
+        // Handle #[response(T)]
+        if attr.path().is_ident("response") {
+            match attr.parse_args::<Type>() {
+                Ok(ty) => response_type = Some(ty),
+                Err(e) => panic!("Invalid #[response(T: DeserializeOwned)] type: {}", e),
+            }
+        };
     }
 
     // Regex to find all placeholders in path like {field}
@@ -47,9 +58,14 @@ pub fn derive_query_url(input: TokenStream) -> TokenStream {
         };
     }
 
+    // Define the response type
+    let response_type = response_type.expect("Missing #[response(T: DeserializeOwned)] attribute");
+
     // Generate the final impl with interpolated path
-    let url_encoded = quote! {
+    let expanded = quote! {
         impl HarborRequest for #struct_name {
+            type Response = #response_type;
+
             fn to_url(&self) -> String {
                 let path = #replaced_path;
                 let query = ::serde_urlencoded::to_string(self).unwrap();
@@ -61,5 +77,5 @@ pub fn derive_query_url(input: TokenStream) -> TokenStream {
         }
     };
 
-    url_encoded.into()
+    expanded.into()
 }
