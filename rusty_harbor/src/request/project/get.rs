@@ -7,15 +7,15 @@ use crate::request::ToUrl;
 /// This endpoint returns specific project information by project ID.
 #[derive(QueryUrl, Serialize)]
 #[query_url(path = "projects/{project_name_or_id}")]
-pub struct Project {
+pub struct GetProject {
     /// The name or id of the project.
     #[serde(skip)]
     pub project_name_or_id: String,
 }
 
-impl Project {
+impl GetProject {
     pub fn new(project_name_or_id: impl Into<String>) -> Self {
-        Project {
+        GetProject {
             project_name_or_id: project_name_or_id.into(),
         }
     }
@@ -24,15 +24,15 @@ impl Project {
 /// Get the deletable status of the project.
 #[derive(QueryUrl, Serialize)]
 #[query_url(path = "projects/{project_name_or_id}/_deletable")]
-pub struct ProjectDeletable {
+pub struct GetProjectDeletable {
     /// The name or id of the project.
     #[serde(skip)]
     pub project_name_or_id: String,
 }
 
-impl ProjectDeletable {
+impl GetProjectDeletable {
     pub fn new(project_name_or_id: impl Into<String>) -> Self {
-        ProjectDeletable {
+        GetProjectDeletable {
             project_name_or_id: project_name_or_id.into(),
         }
     }
@@ -41,15 +41,15 @@ impl ProjectDeletable {
 /// Get summary of the project.
 #[derive(QueryUrl, Serialize)]
 #[query_url(path = "projects/{project_name_or_id}/summary")]
-pub struct ProjectSummary {
+pub struct GetProjectSummary {
     /// The name or id of the project.
     #[serde(skip)]
     pub project_name_or_id: String,
 }
 
-impl ProjectSummary {
+impl GetProjectSummary {
     pub fn new(project_name_or_id: impl Into<String>) -> Self {
-        ProjectSummary {
+        GetProjectSummary {
             project_name_or_id: project_name_or_id.into(),
         }
     }
@@ -59,7 +59,7 @@ impl ProjectSummary {
 #[derive(Builder, Default, QueryUrl, Serialize)]
 #[builder(setter(into, strip_option), pattern = "owned")]
 #[query_url(path = "projects/{project_name_or_id}/artifacts")]
-pub struct ProjectArtifacts {
+pub struct GetProjectArtifacts {
     /// The name or id of the project.
     #[serde(skip)]
     pub project_name_or_id: String,
@@ -119,9 +119,9 @@ pub struct ProjectArtifacts {
     pub latest_in_repository: Option<bool>,
 }
 
-impl ProjectArtifacts {
-    pub fn builder(project_name_or_id: impl Into<String>) -> ProjectArtifactsBuilder {
-        ProjectArtifactsBuilder::default().project_name_or_id(project_name_or_id)
+impl GetProjectArtifacts {
+    pub fn builder(project_name_or_id: impl Into<String>) -> GetProjectArtifactsBuilder {
+        GetProjectArtifactsBuilder::default().project_name_or_id(project_name_or_id)
     }
 }
 
@@ -129,7 +129,7 @@ impl ProjectArtifacts {
 #[derive(Builder, Default, QueryUrl, Serialize)]
 #[builder(setter(into, strip_option), pattern = "owned")]
 #[query_url(path = "projects")]
-pub struct Projects {
+pub struct GetProjects {
     /// Query string to query resources. Supported query patterns are "exact match(k=v)",
     /// "fuzzy match(k=~v)", "range(k=[min~max])", "list with union releationship(k={v1 v2 v3})"
     /// and "list with intersetion relationship(k=(v1 v2 v3))". The value of range and list can be
@@ -166,8 +166,8 @@ pub struct Projects {
     pub with_detail: Option<bool>,
 }
 
-impl Projects {
-    pub fn builder() -> ProjectsBuilder {
-        ProjectsBuilder::default()
+impl GetProjects {
+    pub fn builder() -> GetProjectsBuilder {
+        GetProjectsBuilder::default()
     }
 }

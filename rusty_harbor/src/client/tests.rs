@@ -1,12 +1,12 @@
 use dotenv::from_filename;
 
-use crate::{client::HarborClient, request::project, response::project::Project};
+use crate::{client::HarborClient, request::project::get::GetProjects, response::project::Project};
 
 #[test]
 fn harbor_client_can_be_initialized_with_different_credentials() {
     // Load the template file, containing "OTHER_USER" and "OTHER_PASS"
     from_filename(".env.template").ok();
-    
+
     // Create the client from (a different) environment file
     let client = HarborClient::from_env("OTHER_USER", "OTHER_PASS").unwrap();
 
@@ -21,10 +21,7 @@ async fn get_projects_from_workspace() {
     let client = HarborClient::default();
 
     // Create a GET Projects request through the builder
-    let request = project::get::Projects::builder()
-        .page_size(50)
-        .build()
-        .unwrap();
+    let request = GetProjects::builder().page_size(50).build().unwrap();
 
     // Send the request and deserialize the response
     let projects = client.get::<_, Vec<Project>>(request).await;
