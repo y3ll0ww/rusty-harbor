@@ -1,6 +1,8 @@
 use crate::request::{
     HarborRequest,
-    project::get::{GetProject, GetProjectArtifacts, GetProjectDeletable, GetProjectSummary, GetProjects},
+    v2::project::get::{
+        GetProject, GetProjectArtifacts, GetProjectDeletable, GetProjectSummary, GetProjects,
+    },
 };
 
 const PROJECT_NAME: &str = "some-project-name";

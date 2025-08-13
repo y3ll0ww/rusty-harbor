@@ -4,7 +4,7 @@ use crate::{
     client::HarborClient,
     request::{
         HarborRequest,
-        project::get::{GetProjectArtifacts, GetProjectSummary, GetProjects},
+        v2::project::get::{GetProjectArtifacts, GetProjectSummary, GetProjects},
     },
 };
 
