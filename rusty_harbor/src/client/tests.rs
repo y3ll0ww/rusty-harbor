@@ -1,6 +1,6 @@
 use dotenv::from_filename;
 
-use crate::{client::HarborClient, request::project::get::GetProjects, response::project::Project};
+use crate::{client::HarborClient, request::project::get::GetProjects};
 
 #[test]
 fn harbor_client_can_be_initialized_with_different_credentials() {
@@ -24,8 +24,11 @@ async fn get_projects_from_workspace() {
     let request = GetProjects::builder().page_size(50).build().unwrap();
 
     // Send the request and deserialize the response
-    let projects = client.get::<_, Vec<Project>>(request).await;
+    let projects = client.get(request).await;
 
     // Verify the response is correct
     assert!(projects.is_ok());
+
+    // Verify the return type is (at least) an unempty vector
+    assert!(!projects.unwrap().is_empty());
 }

@@ -1,5 +1,4 @@
 use reqwest::Method;
-use serde::de::DeserializeOwned;
 
 use crate::{
     client::{HarborClient, error::ClientError},
@@ -10,11 +9,10 @@ use crate::{
 /// with a different [`Method`].
 macro_rules! http_method_fn {
     ($name:ident, $method:expr) => {
-        pub async fn $name<R, T>(&self, request: R) -> Result<T, ClientError>
-        where
-            R: HarborRequest,
-            T: DeserializeOwned,
-        {
+        pub async fn $name<R: HarborRequest>(
+            &self,
+            request: R,
+        ) -> Result<R::Response, ClientError> {
             self.dispatch($method, request).await
         }
     };
@@ -37,11 +35,11 @@ impl HarborClient {
     /// Then it sends the request using basic authorization with
     /// [`username`](HarborClient::username) and [`password`](HarborClient::password), check if the
     /// response is OK and (if so) deserialize it into type `T`.
-    async fn dispatch<R, T>(&self, method: Method, request: R) -> Result<T, ClientError>
-    where
-        R: HarborRequest,
-        T: DeserializeOwned,
-    {
+    async fn dispatch<R: HarborRequest>(
+        &self,
+        method: Method,
+        request: R,
+    ) -> Result<R::Response, ClientError> {
         // Define the API url with the url encoded request
         let url = format!("{}/api/v2.0/{}", self.base_url, request.to_url());
 
@@ -63,6 +61,6 @@ impl HarborClient {
         }
 
         // Deserialize the response in the expected type
-        serde_json::from_str::<T>(&response.text().await?).map_err(ClientError::from)
+        serde_json::from_str::<R::Response>(&response.text().await?).map_err(ClientError::from)
     }
 }
