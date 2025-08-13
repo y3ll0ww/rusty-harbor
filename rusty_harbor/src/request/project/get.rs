@@ -4,7 +4,7 @@ use serde::Serialize;
 
 use crate::{
     request::HarborRequest,
-    response::project::{Artifact, Project, ProjectDeletable, ProjectSummary},
+    response::v2::{Artifact, Project, ProjectDeletable, ProjectSummary},
 };
 
 /// This endpoint returns specific project information by project ID.
