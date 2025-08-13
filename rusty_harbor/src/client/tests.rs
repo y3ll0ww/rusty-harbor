@@ -1,6 +1,15 @@
 use dotenv::from_filename;
 
-use crate::{client::HarborClient, request::project::get::GetProjects};
+use crate::{
+    client::HarborClient,
+    request::{
+        HarborRequest,
+        project::get::{GetProjectArtifacts, GetProjectSummary, GetProjects},
+    },
+};
+
+/// Name of the project to be used in below integration tests
+const PROJECT_NAME: &str = "<PROJECT_NAME>";
 
 #[test]
 fn harbor_client_can_be_initialized_with_different_credentials() {
@@ -17,18 +26,34 @@ fn harbor_client_can_be_initialized_with_different_credentials() {
 
 #[tokio::test]
 async fn get_projects_from_workspace() {
+    let request = GetProjects::builder().page_size(50).build().unwrap();
+    let projects = test_get_request(request).await;
+    assert!(!projects.is_empty());
+}
+
+#[tokio::test]
+async fn get_project_summary() {
+    let request = GetProjectSummary::new(PROJECT_NAME);
+    let _project_summary = test_get_request(request).await;
+}
+
+#[tokio::test]
+async fn get_project_artifacts() {
+    let request = GetProjectArtifacts::builder(PROJECT_NAME).build().unwrap();
+    let artifacts = test_get_request(request).await;
+    assert!(!artifacts.is_empty());
+}
+
+async fn test_get_request<R: HarborRequest>(request: R) -> R::Response {
     // Initialize a default client (using valid .env credentials)
     let client = HarborClient::default();
 
-    // Create a GET Projects request through the builder
-    let request = GetProjects::builder().page_size(50).build().unwrap();
-
     // Send the request and deserialize the response
-    let projects = client.get(request).await;
+    let response = client.get(request).await;
 
     // Verify the response is correct
-    assert!(projects.is_ok());
+    assert!(response.is_ok());
 
-    // Verify the return type is (at least) an unempty vector
-    assert!(!projects.unwrap().is_empty());
+    // Return unwrapped response
+    response.unwrap()
 }

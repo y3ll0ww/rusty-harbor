@@ -4,7 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-query_url.workspace = true
+derive_harbor.workspace = true
+chrono = { version = "0.4", features = ["serde"] }
 derive_builder = "0.20"
 dotenv = "0.15"
 reqwest = "0.12"

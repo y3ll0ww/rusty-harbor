@@ -1,12 +1,18 @@
 use derive_builder::Builder;
-use query_url::QueryUrl;
+use derive_harbor::Harbor;
 use serde::Serialize;
 
-use crate::request::HarborRequest;
+use crate::{
+    request::HarborRequest,
+    response::project::{Artifact, Project, ProjectDeletable, ProjectSummary},
+};
 
 /// This endpoint returns specific project information by project ID.
-#[derive(QueryUrl, Serialize)]
-#[query_url(path = "projects/{project_name_or_id}")]
+#[derive(Harbor, Serialize)]
+#[harbor(
+    url = "projects/{project_name_or_id}",
+    response = Project,
+)]
 pub struct GetProject {
     /// The name or id of the project.
     #[serde(skip)]
@@ -22,8 +28,11 @@ impl GetProject {
 }
 
 /// Get the deletable status of the project.
-#[derive(QueryUrl, Serialize)]
-#[query_url(path = "projects/{project_name_or_id}/_deletable")]
+#[derive(Harbor, Serialize)]
+#[harbor(
+    url = "projects/{project_name_or_id}/_deletable",
+    response = ProjectDeletable,
+)]
 pub struct GetProjectDeletable {
     /// The name or id of the project.
     #[serde(skip)]
@@ -39,8 +48,11 @@ impl GetProjectDeletable {
 }
 
 /// Get summary of the project.
-#[derive(QueryUrl, Serialize)]
-#[query_url(path = "projects/{project_name_or_id}/summary")]
+#[derive(Harbor, Serialize)]
+#[harbor(
+    url = "projects/{project_name_or_id}/summary",
+    response = ProjectSummary,
+)]
 pub struct GetProjectSummary {
     /// The name or id of the project.
     #[serde(skip)]
@@ -56,9 +68,12 @@ impl GetProjectSummary {
 }
 
 /// List artifacts of the specified project.
-#[derive(Builder, Default, QueryUrl, Serialize)]
+#[derive(Builder, Default, Harbor, Serialize)]
 #[builder(setter(into, strip_option), pattern = "owned")]
-#[query_url(path = "projects/{project_name_or_id}/artifacts")]
+#[harbor(
+    url = "projects/{project_name_or_id}/artifacts",
+    response = Vec<Artifact>,
+)]
 pub struct GetProjectArtifacts {
     /// The name or id of the project.
     #[serde(skip)]
@@ -126,9 +141,12 @@ impl GetProjectArtifacts {
 }
 
 /// This endpoint returns projects created by Harbor.
-#[derive(Builder, Default, QueryUrl, Serialize)]
+#[derive(Builder, Default, Harbor, Serialize)]
 #[builder(setter(into, strip_option), pattern = "owned")]
-#[query_url(path = "projects")]
+#[harbor(
+    url = "projects",
+    response = Vec<Project>,
+)]
 pub struct GetProjects {
     /// Query string to query resources. Supported query patterns are "exact match(k=v)",
     /// "fuzzy match(k=~v)", "range(k=[min~max])", "list with union releationship(k={v1 v2 v3})"

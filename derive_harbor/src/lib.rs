@@ -3,9 +3,9 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
 use regex::Regex;
-use syn::{DeriveInput, Lit, parse_macro_input, Type};
+use syn::{DeriveInput, Lit, Type, parse_macro_input};
 
-#[proc_macro_derive(QueryUrl, attributes(query_url, response))]
+#[proc_macro_derive(Harbor, attributes(harbor))]
 pub fn derive_query_url(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let struct_name = &input.ident;
@@ -15,14 +15,18 @@ pub fn derive_query_url(input: TokenStream) -> TokenStream {
 
     // Extract base path from attribute
     for attr in &input.attrs {
-        // Handle #[query_url(path = "...")]
-        if attr.path().is_ident("query_url") {
+        if attr.path().is_ident("harbor") {
             let _ = attr.parse_nested_meta(|meta| {
-                if meta.path.is_ident("path") {
+                // Handle #[harbor(url = "...")]
+                if meta.path.is_ident("url") {
                     let lit: Lit = meta.value()?.parse()?;
                     if let Lit::Str(lit_str) = lit {
                         base_path = lit_str.value();
                     }
+                // Handle #[harbor(response = "...")]
+                } else if meta.path.is_ident("response") {
+                    let ty: Type = meta.value()?.parse()?;
+                    response_type = Some(ty);
                 }
                 Ok(())
             });
