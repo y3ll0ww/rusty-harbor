@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde_json::Value;
 
-use crate::response::v2::types::{AdditionLink, NativeReportSummary};
+use crate::response::v2::project::types::{AdditionLink, NativeReportSummary};
 
 pub type AdditionLinks = HashMap<String, AdditionLink>;
 

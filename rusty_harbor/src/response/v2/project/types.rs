@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::Deserialize;
 
-use crate::response::v2::maps::{Annotations, ResourceList, Summary};
+use crate::response::v2::project::maps::{Annotations, ResourceList, Summary};
 
 /// The accessory of the artifact.
 #[derive(Debug, Deserialize)]
@@ -162,7 +162,7 @@ pub struct ProjectMetadata {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct ProjectSummaryQuota{
+pub struct ProjectSummaryQuota {
     pub hard: Option<ResourceList>,
     pub used: Option<ResourceList>,
 }
