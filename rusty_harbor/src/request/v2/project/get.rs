@@ -1,5 +1,6 @@
 use derive_builder::Builder;
 use derive_harbor::Harbor;
+use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use serde::Serialize;
 
 use crate::{

@@ -47,6 +47,7 @@ impl HarborClient {
         let response = self
             .client
             .request(method, url)
+            .headers(request.headers().map_err(ClientError::Header)?)
             .basic_auth(&self.username, Some(&self.password))
             .send()
             .await?;

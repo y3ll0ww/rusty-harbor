@@ -3,8 +3,7 @@ use dotenv::from_filename;
 use crate::{
     client::HarborClient,
     request::{
-        HarborRequest,
-        v2::project::get::{GetProjectArtifacts, GetProjectSummary, GetProjects},
+        v2::project::{get::{GetProjectArtifacts, GetProjectSummary, GetProjects}, head::HeadProjects}, HarborRequest
     },
 };
 
@@ -44,12 +43,21 @@ async fn get_project_artifacts() {
     assert!(!artifacts.is_empty());
 }
 
+#[tokio::test]
+async fn head_projects() {
+    let request = HeadProjects::builder(PROJECT_NAME).build().unwrap();
+    let _ = test_get_request(request).await;
+}
+
 async fn test_get_request<R: HarborRequest>(request: R) -> R::Response {
     // Initialize a default client (using valid .env credentials)
     let client = HarborClient::default();
 
     // Send the request and deserialize the response
     let response = client.get(request).await;
+
+    // Print the response
+    println!("{response:?}");
 
     // Verify the response is correct
     assert!(response.is_ok());
