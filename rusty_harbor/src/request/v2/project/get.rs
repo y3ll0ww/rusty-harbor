@@ -1,63 +1,80 @@
 use derive_builder::Builder;
-use query_url::QueryUrl;
+use derive_harbor::Harbor;
 use serde::Serialize;
 
+use crate::{
+    request::HarborRequest,
+    response::v2::project::{Artifact, Project, ProjectDeletable, ProjectSummary},
+};
+
 /// This endpoint returns specific project information by project ID.
-#[derive(QueryUrl, Serialize)]
-#[query_url(path = "projects/{project_name_or_id}")]
-pub struct Project {
+#[derive(Harbor, Serialize)]
+#[harbor(
+    url = "projects/{project_name_or_id}",
+    response = Project,
+)]
+pub struct GetProject {
     /// The name or id of the project.
     #[serde(skip)]
     pub project_name_or_id: String,
 }
 
-impl Project {
+impl GetProject {
     pub fn new(project_name_or_id: impl Into<String>) -> Self {
-        Project {
+        GetProject {
             project_name_or_id: project_name_or_id.into(),
         }
     }
 }
 
 /// Get the deletable status of the project.
-#[derive(QueryUrl, Serialize)]
-#[query_url(path = "projects/{project_name_or_id}/_deletable")]
-pub struct ProjectDeletable {
+#[derive(Harbor, Serialize)]
+#[harbor(
+    url = "projects/{project_name_or_id}/_deletable",
+    response = ProjectDeletable,
+)]
+pub struct GetProjectDeletable {
     /// The name or id of the project.
     #[serde(skip)]
     pub project_name_or_id: String,
 }
 
-impl ProjectDeletable {
+impl GetProjectDeletable {
     pub fn new(project_name_or_id: impl Into<String>) -> Self {
-        ProjectDeletable {
+        GetProjectDeletable {
             project_name_or_id: project_name_or_id.into(),
         }
     }
 }
 
 /// Get summary of the project.
-#[derive(QueryUrl, Serialize)]
-#[query_url(path = "projects/{project_name_or_id}/summary")]
-pub struct ProjectSummary {
+#[derive(Harbor, Serialize)]
+#[harbor(
+    url = "projects/{project_name_or_id}/summary",
+    response = ProjectSummary,
+)]
+pub struct GetProjectSummary {
     /// The name or id of the project.
     #[serde(skip)]
     pub project_name_or_id: String,
 }
 
-impl ProjectSummary {
+impl GetProjectSummary {
     pub fn new(project_name_or_id: impl Into<String>) -> Self {
-        ProjectSummary {
+        GetProjectSummary {
             project_name_or_id: project_name_or_id.into(),
         }
     }
 }
 
 /// List artifacts of the specified project.
-#[derive(Builder, Default, QueryUrl, Serialize)]
+#[derive(Builder, Default, Harbor, Serialize)]
 #[builder(setter(into, strip_option), pattern = "owned")]
-#[query_url(path = "projects/{project_name_or_id}/artifacts")]
-pub struct ProjectArtifacts {
+#[harbor(
+    url = "projects/{project_name_or_id}/artifacts",
+    response = Vec<Artifact>,
+)]
+pub struct GetProjectArtifacts {
     /// The name or id of the project.
     #[serde(skip)]
     pub project_name_or_id: String,
@@ -117,17 +134,20 @@ pub struct ProjectArtifacts {
     pub latest_in_repository: Option<bool>,
 }
 
-impl ProjectArtifacts {
-    pub fn new(project_name_or_id: impl Into<String>) -> ProjectArtifactsBuilder {
-        ProjectArtifactsBuilder::default().project_name_or_id(project_name_or_id)
+impl GetProjectArtifacts {
+    pub fn builder(project_name_or_id: impl Into<String>) -> GetProjectArtifactsBuilder {
+        GetProjectArtifactsBuilder::default().project_name_or_id(project_name_or_id)
     }
 }
 
 /// This endpoint returns projects created by Harbor.
-#[derive(Builder, Default, QueryUrl, Serialize)]
+#[derive(Builder, Default, Harbor, Serialize)]
 #[builder(setter(into, strip_option), pattern = "owned")]
-#[query_url(path = "projects")]
-pub struct Projects {
+#[harbor(
+    url = "projects",
+    response = Vec<Project>,
+)]
+pub struct GetProjects {
     /// Query string to query resources. Supported query patterns are "exact match(k=v)",
     /// "fuzzy match(k=~v)", "range(k=[min~max])", "list with union releationship(k={v1 v2 v3})"
     /// and "list with intersetion relationship(k=(v1 v2 v3))". The value of range and list can be
@@ -164,8 +184,8 @@ pub struct Projects {
     pub with_detail: Option<bool>,
 }
 
-impl Projects {
-    pub fn new() -> ProjectsBuilder {
-        ProjectsBuilder::default()
+impl GetProjects {
+    pub fn builder() -> GetProjectsBuilder {
+        GetProjectsBuilder::default()
     }
 }
