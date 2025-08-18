@@ -1,9 +1,14 @@
 use dotenv::from_filename;
+use reqwest::Method;
 
 use crate::{
     client::HarborClient,
     request::{
-        v2::project::{get::{GetProjectArtifacts, GetProjectSummary, GetProjects}, head::HeadProjects}, HarborRequest
+        HarborRequest,
+        v2::project::{
+            get::{GetProjectArtifacts, GetProjectSummary, GetProjects},
+            head::HeadProjects,
+        },
     },
 };
 
@@ -46,15 +51,31 @@ async fn get_project_artifacts() {
 #[tokio::test]
 async fn head_projects() {
     let request = HeadProjects::builder(PROJECT_NAME).build().unwrap();
-    let _ = test_get_request(request).await;
+    let _ = test_head_request(request).await;
 }
 
 async fn test_get_request<R: HarborRequest>(request: R) -> R::Response {
+    test_request(request, Method::GET).await
+}
+
+async fn test_head_request<R: HarborRequest>(request: R) -> R::Response {
+    test_request(request, Method::HEAD).await
+}
+
+async fn test_request<R: HarborRequest>(request: R, method: Method) -> R::Response {
     // Initialize a default client (using valid .env credentials)
     let client = HarborClient::default();
 
     // Send the request and deserialize the response
-    let response = client.get(request).await;
+    let response = match method {
+        Method::DELETE => client.delete(request).await,
+        Method::GET => client.get(request).await,
+        Method::HEAD => client.head(request).await,
+        Method::PATCH => client.patch(request).await,
+        Method::POST => client.post(request).await,
+        Method::PUT => client.put(request).await,
+        _ => panic!("Unsupported method: {method}"),
+    };
 
     // Print the response
     println!("{response:?}");

@@ -19,7 +19,6 @@ pub struct HeadProjects {
     #[serde(rename = "X-Request-Id")]
     pub id: Option<String>,
     /// Project name for checking exists.
-    #[header]
     pub project_name: String,
 }
 

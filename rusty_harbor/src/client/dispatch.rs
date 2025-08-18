@@ -46,7 +46,7 @@ impl HarborClient {
         // Send the request and wait for the response
         let response = self
             .client
-            .request(method, url)
+            .request(method.clone(), url)
             .headers(request.headers().map_err(ClientError::Header)?)
             .basic_auth(&self.username, Some(&self.password))
             .send()
@@ -60,8 +60,14 @@ impl HarborClient {
             let message: String = response.text().await?;
             return Err(ClientError::Response { status, message });
         }
-
+                
         // Deserialize the response in the expected type
-        serde_json::from_str::<R::Response>(&response.text().await?).map_err(ClientError::from)
+        serde_json::from_str::<R::Response>(&{
+            match method {
+                // Special case for HEAD since it won't return any body
+                Method::HEAD => String::from("null"),
+                _ => response.text().await?
+            }
+        }).map_err(ClientError::from)
     }
 }
