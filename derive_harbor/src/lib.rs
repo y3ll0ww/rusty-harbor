@@ -71,9 +71,25 @@ pub fn derive_harbor(input: TokenStream) -> TokenStream {
             );
             option_map.insert(name_str.clone(), is_option);
 
-            // Header handling (kebab-case header name)
+            // Header handling (kebab-case header name, overridable via #[header(name = "...")])
             if is_header {
-                let header_name = name_str.replace('_', "-");
+                // default: kebab-case of the field name
+                let mut header_name = name_str.replace('_', "-");
+
+                // Support: #[header(name = "X-Request-Id")]  (or #[header(rename = "...")])
+                for attr in &field.attrs {
+                    if attr.path().is_ident("header") {
+                        // syn v2: closure must return Result<(), syn::Error>
+                        let _ = attr.parse_nested_meta(|meta| {
+                            if meta.path.is_ident("name") || meta.path.is_ident("rename") {
+                                let lit: LitStr = meta.value()?.parse()?;
+                                header_name = lit.value();
+                            }
+                            Ok(())
+                        });
+                    }
+                }
+
                 let header_name_lit = LitStr::new(&header_name, Span::call_site());
 
                 if is_option {
