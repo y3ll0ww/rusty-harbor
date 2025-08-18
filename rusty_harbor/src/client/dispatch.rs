@@ -60,14 +60,15 @@ impl HarborClient {
             let message: String = response.text().await?;
             return Err(ClientError::Response { status, message });
         }
-                
+
         // Deserialize the response in the expected type
         serde_json::from_str::<R::Response>(&{
             match method {
                 // Special case for HEAD since it won't return any body
                 Method::HEAD => String::from("null"),
-                _ => response.text().await?
+                _ => response.text().await?,
             }
-        }).map_err(ClientError::from)
+        })
+        .map_err(ClientError::from)
     }
 }
