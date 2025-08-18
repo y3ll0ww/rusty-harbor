@@ -55,58 +55,58 @@ pub fn derive_harbor(input: TokenStream) -> TokenStream {
     let mut header_push_tokens = Vec::new();
     let mut query_push_tokens = Vec::new();
 
-    if let Data::Struct(data) = &input.data {
-        if let Fields::Named(fields) = &data.fields {
-            for field in &fields.named {
-                let ident = field
-                    .ident
-                    .clone()
-                    .expect("Harbor derive expects named struct fields");
-                let name_str = ident.to_string();
+    if let Data::Struct(data) = &input.data
+        && let Fields::Named(fields) = &data.fields
+    {
+        for field in &fields.named {
+            let ident = field
+                .ident
+                .clone()
+                .expect("Harbor derive expects named struct fields");
+            let name_str = ident.to_string();
 
-                let is_header = field.attrs.iter().any(|a| a.path().is_ident("header"));
-                let is_option = matches!(&field.ty,
-                    Type::Path(tp) if tp.path.segments.iter().any(|seg| seg.ident == "Option")
-                );
-                option_map.insert(name_str.clone(), is_option);
+            let is_header = field.attrs.iter().any(|a| a.path().is_ident("header"));
+            let is_option = matches!(&field.ty,
+                Type::Path(tp) if tp.path.segments.iter().any(|seg| seg.ident == "Option")
+            );
+            option_map.insert(name_str.clone(), is_option);
 
-                // Header handling (kebab-case header name)
-                if is_header {
-                    let header_name = name_str.replace('_', "-");
-                    let header_name_lit = LitStr::new(&header_name, Span::call_site());
+            // Header handling (kebab-case header name)
+            if is_header {
+                let header_name = name_str.replace('_', "-");
+                let header_name_lit = LitStr::new(&header_name, Span::call_site());
 
-                    if is_option {
-                        header_push_tokens.push(quote! {
-                            if let Some(v) = self.#ident.as_ref() {
-                                headers.push((#header_name_lit.to_string(), v.to_string()));
-                            }
-                        });
-                    } else {
-                        header_push_tokens.push(quote! {
-                            headers.push((#header_name_lit.to_string(), self.#ident.to_string()));
-                        });
-                    }
-                    continue;
-                }
-
-                // Skip query serialization for fields used as path placeholders
-                if placeholder_set.contains(&name_str) {
-                    continue;
-                }
-
-                // Query handling (skip None, include Some)
-                let key_lit = LitStr::new(&name_str, Span::call_site());
                 if is_option {
-                    query_push_tokens.push(quote! {
+                    header_push_tokens.push(quote! {
                         if let Some(v) = self.#ident.as_ref() {
-                            query.push((#key_lit.to_string(), v.to_string()));
+                            headers.push((#header_name_lit.to_string(), v.to_string()));
                         }
                     });
                 } else {
-                    query_push_tokens.push(quote! {
-                        query.push((#key_lit.to_string(), self.#ident.to_string()));
+                    header_push_tokens.push(quote! {
+                        headers.push((#header_name_lit.to_string(), self.#ident.to_string()));
                     });
                 }
+                continue;
+            }
+
+            // Skip query serialization for fields used as path placeholders
+            if placeholder_set.contains(&name_str) {
+                continue;
+            }
+
+            // Query handling (skip None, include Some)
+            let key_lit = LitStr::new(&name_str, Span::call_site());
+            if is_option {
+                query_push_tokens.push(quote! {
+                    if let Some(v) = self.#ident.as_ref() {
+                        query.push((#key_lit.to_string(), v.to_string()));
+                    }
+                });
+            } else {
+                query_push_tokens.push(quote! {
+                    query.push((#key_lit.to_string(), self.#ident.to_string()));
+                });
             }
         }
     }
