@@ -5,9 +5,6 @@ use serde::Serialize;
 
 use crate::{request::HarborRequest, response::v2::statistics::Statistic};
 
-/// The Search endpoint returns information about the projects and repositories offered at public
-/// status or related to the current logged in user. The response includes the project and
-/// repository list in a proper display order.
 #[derive(Builder, Harbor, Serialize)]
 #[harbor(
     url = "statistics",
