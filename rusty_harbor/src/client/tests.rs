@@ -4,11 +4,10 @@ use reqwest::Method;
 use crate::{
     client::HarborClient,
     request::{
-        HarborRequest,
-        v2::project::{
+        v2::{health::get::GetHealth, project::{
             get::{GetProjectArtifacts, GetProjectSummary, GetProjects},
             head::HeadProjects,
-        },
+        }}, HarborRequest
     },
 };
 
@@ -56,6 +55,12 @@ async fn get_project_artifacts() {
 async fn head_projects() {
     let request = HeadProjects::builder(PROJECT_NAME).build().unwrap();
     let _ = test_head(request).await;
+}
+
+#[tokio::test]
+async fn get_health() {
+    let request = GetHealth::builder().build().unwrap();
+    let _ = test_get(request).await;
 }
 
 async fn test_get<R: HarborRequest>(request: R) -> R::Response {
