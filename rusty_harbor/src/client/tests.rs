@@ -7,7 +7,7 @@ use crate::{
         v2::{health::get::GetHealth, project::{
             get::{GetProjectArtifacts, GetProjectSummary, GetProjects},
             head::HeadProjects,
-        }}, HarborRequest
+        }, search::get::GetSearch}, HarborRequest
     },
 };
 
@@ -60,6 +60,12 @@ async fn head_projects() {
 #[tokio::test]
 async fn get_health() {
     let request = GetHealth::builder().build().unwrap();
+    let _ = test_get(request).await;
+}
+
+#[tokio::test]
+async fn get_search() {
+    let request = GetSearch::builder(PROJECT_NAME).build().unwrap();
     let _ = test_get(request).await;
 }
 

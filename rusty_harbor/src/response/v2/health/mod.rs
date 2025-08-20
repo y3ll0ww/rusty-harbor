@@ -1,8 +1,7 @@
 use serde::Deserialize;
-//The system health status
-/// Response to requests that request project(s):
-/// - [`GetProject`](crate::request::project::get::GetProject)
-/// - [`GetProjects`](crate::request::project::get::GetProjects) (in a vector)
+
+/// Check the status of Harbor components. This path does not require authentication.
+/// Response to the [`GetHealth`](crate::request::v2::health::get::GetHealth) request.
 #[derive(Debug, Deserialize)]
 pub struct OverallHealthStatus {
     /// The overall health status. It is "healthy" only when all the components' status are

@@ -11,8 +11,8 @@ use types::{
 };
 
 /// Response to requests that request project(s):
-/// - [`GetProject`](crate::request::project::get::GetProject)
-/// - [`GetProjects`](crate::request::project::get::GetProjects) (in a vector)
+/// - [`GetProject`](crate::request::v2::project::get::GetProject)
+/// - [`GetProjects`](crate::request::v2::project::get::GetProjects) (in a vector)
 #[derive(Debug, Deserialize)]
 pub struct Project {
     /// Project ID.
@@ -46,7 +46,7 @@ pub struct Project {
     pub cve_allowlist: CveAllowlist,
 }
 
-/// Response to the [`GetProjectDeletable`](crate::request::project::get::GetProjectDeletable)
+/// Response to the [`GetProjectDeletable`](crate::request::v2::project::get::GetProjectDeletable)
 /// request.
 #[derive(Debug, Deserialize)]
 pub struct ProjectDeletable {
@@ -56,7 +56,7 @@ pub struct ProjectDeletable {
     pub message: String,
 }
 
-/// Respone to the [`GetProjectSummary`](crate::request::project::get::GetProjectSummary) request.
+/// Respone to the [`GetProjectSummary`](crate::request::v2::project::get::GetProjectSummary) request.
 #[derive(Debug, Deserialize)]
 pub struct ProjectSummary {
     /// The number of the repositories under this project.
@@ -75,7 +75,7 @@ pub struct ProjectSummary {
     pub registry: Option<Registry>,
 }
 
-/// Response to the [`GetProjectArtifacts`](crate::request::project::get::GetProjectArtifacts)
+/// Response to the [`GetProjectArtifacts`](crate::request::v2::project::get::GetProjectArtifacts)
 /// request (in a vector).
 #[derive(Debug, Deserialize)]
 pub struct Artifact {
