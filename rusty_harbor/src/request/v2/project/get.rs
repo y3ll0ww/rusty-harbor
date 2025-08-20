@@ -138,8 +138,7 @@ pub struct GetProjectArtifacts {
     /// query patterns should be put in the query string "q=xxx" and splitted by ",". e.g.
     /// q=k1=v1,k2=~v2,k3=[min~max].
     #[builder(default)]
-    #[serde(rename = "q")]
-    pub query: Option<String>,
+    pub q: Option<String>,
     /// Sort the resource list in ascending or descending order. e.g. sort by field1 in ascending
     /// order and field2 in descending order with "sort=field1,-field2".
     #[builder(default)]
@@ -212,8 +211,7 @@ pub struct GetProjects {
     /// query patterns should be put in the query string "q=xxx" and splitted by ",". e.g.
     /// q=k1=v1,k2=~v2,k3=[min~max].
     #[builder(default)]
-    #[serde(rename = "q")]
-    pub query: Option<String>,
+    pub q: Option<String>,
     /// The page number.
     /// Default value: `1`
     #[builder(default)]

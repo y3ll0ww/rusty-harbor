@@ -7,7 +7,7 @@ use crate::{
         v2::{health::get::GetHealth, project::{
             get::{GetProjectArtifacts, GetProjectSummary, GetProjects},
             head::HeadProjects,
-        }, search::get::GetSearch}, HarborRequest
+        }, search::get::GetSearch, statistics::get::GetStatistics}, HarborRequest
     },
 };
 
@@ -69,6 +69,12 @@ async fn get_search() {
     let _ = test_get(request).await;
 }
 
+#[tokio::test]
+async fn get_statistics() {
+    let request = GetStatistics::builder().build().unwrap();
+    let _ = test_get(request).await;
+}
+
 async fn test_get<R: HarborRequest>(request: R) -> R::Response {
     test_request(request, Method::GET).await
 }
@@ -80,7 +86,7 @@ async fn test_head<R: HarborRequest>(request: R) -> R::Response {
 async fn test_request<R: HarborRequest>(request: R, method: Method) -> R::Response {
     // Initialize a default client (using valid .env credentials)
     let client = HarborClient::default();
-
+println!("1");
     // Send the request and deserialize the response
     let response = match method {
         Method::DELETE => client.delete(request).await,
