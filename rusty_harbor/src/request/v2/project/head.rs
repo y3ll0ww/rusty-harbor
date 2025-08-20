@@ -13,11 +13,10 @@ use crate::request::HarborRequest;
     response = Value,
 )]
 pub struct HeadProjects {
-    /// An unique ID for the request
-    #[header]
+    /// An unique ID for the request.
     #[builder(default)]
-    #[serde(rename = "X-Request-Id")]
-    pub id: Option<String>,
+    #[header(rename = "X-Request-Id")]
+    pub request_id: Option<String>,
     /// Project name for checking exists.
     pub project_name: String,
 }

@@ -1,4 +1,5 @@
-use reqwest::Method;
+use reqwest::{Method, RequestBuilder, Response};
+use serde::de::DeserializeOwned;
 
 use crate::{
     client::{HarborClient, error::ClientError},
@@ -13,7 +14,9 @@ macro_rules! http_method_fn {
             &self,
             request: R,
         ) -> Result<R::Response, ClientError> {
-            self.dispatch($method, request).await
+            let request_builder = self.request($method, request)?;
+            let response = self.dispatch::<R>(request_builder).await?;
+            deserialize_response($method, response).await
         }
     };
 }
@@ -27,6 +30,29 @@ impl HarborClient {
     http_method_fn!(post, Method::POST);
     http_method_fn!(put, Method::PUT);
 
+    fn request<R: HarborRequest>(
+        &self,
+        method: Method,
+        request: R,
+    ) -> Result<RequestBuilder, ClientError> {
+        // Define the API url with the url encoded request
+        let url = format!("{}/api/v2.0/{}", self.base_url, request.to_url());
+
+        // Create the request
+        let request = self
+            .client
+            .request(method.clone(), url)
+            .headers(request.headers().map_err(ClientError::Header)?)
+            .basic_auth(&self.username, Some(&self.password));
+
+        if let Some(cloned) = request.try_clone() {
+            let req = cloned.build()?;
+            println!("{:#?}", req);
+        }
+
+        Ok(request)
+    }
+
     /// Dispatch an HTTP request to the Harbor API.
     ///
     /// It will form the API url using the [`base_url`](HarborClient::base_url) and the
@@ -37,20 +63,10 @@ impl HarborClient {
     /// response is OK and (if so) deserialize it into type `T`.
     async fn dispatch<R: HarborRequest>(
         &self,
-        method: Method,
-        request: R,
-    ) -> Result<R::Response, ClientError> {
-        // Define the API url with the url encoded request
-        let url = format!("{}/api/v2.0/{}", self.base_url, request.to_url());
-
+        request: RequestBuilder,
+    ) -> Result<Response, ClientError> {
         // Send the request and wait for the response
-        let response = self
-            .client
-            .request(method.clone(), url)
-            .headers(request.headers().map_err(ClientError::Header)?)
-            .basic_auth(&self.username, Some(&self.password))
-            .send()
-            .await?;
+        let response = request.send().await?;
 
         // Get the status of the response
         let status = response.status();
@@ -61,14 +77,21 @@ impl HarborClient {
             return Err(ClientError::Response { status, message });
         }
 
-        // Deserialize the response in the expected type
-        serde_json::from_str::<R::Response>(&{
-            match method {
-                // Special case for HEAD since it won't return any body
-                Method::HEAD => String::from("null"),
-                _ => response.text().await?,
-            }
-        })
-        .map_err(ClientError::from)
+        Ok(response)
     }
+}
+
+async fn deserialize_response<R: DeserializeOwned>(
+    method: Method,
+    response: Response,
+) -> Result<R, ClientError> {
+    // Deserialize the response in the expected type
+    serde_json::from_str::<R>(&{
+        match method {
+            // Special case for HEAD since it won't return any body
+            Method::HEAD => String::from("null"),
+            _ => response.text().await?,
+        }
+    })
+    .map_err(ClientError::from)
 }

@@ -13,7 +13,7 @@ use crate::{
 };
 
 /// Name of the project to be used in below integration tests
-const PROJECT_NAME: &str = "<PROJECT_NAME>";
+const PROJECT_NAME: &str = "att_hardware";
 
 #[test]
 fn harbor_client_can_be_initialized_with_different_credentials() {
@@ -31,34 +31,38 @@ fn harbor_client_can_be_initialized_with_different_credentials() {
 #[tokio::test]
 async fn get_projects_from_workspace() {
     let request = GetProjects::builder().page_size(50).build().unwrap();
-    let projects = test_get_request(request).await;
+    let projects = test_get(request).await;
     assert!(!projects.is_empty());
 }
 
 #[tokio::test]
 async fn get_project_summary() {
-    let request = GetProjectSummary::new(PROJECT_NAME);
-    let _project_summary = test_get_request(request).await;
+    let request = GetProjectSummary::builder(PROJECT_NAME)
+        .request_id("SomeID")
+        .is_resource_name(true)
+        .build()
+        .unwrap();
+    let _project_summary = test_get(request).await;
 }
 
 #[tokio::test]
 async fn get_project_artifacts() {
     let request = GetProjectArtifacts::builder(PROJECT_NAME).build().unwrap();
-    let artifacts = test_get_request(request).await;
+    let artifacts = test_get(request).await;
     assert!(!artifacts.is_empty());
 }
 
 #[tokio::test]
 async fn head_projects() {
     let request = HeadProjects::builder(PROJECT_NAME).build().unwrap();
-    let _ = test_head_request(request).await;
+    let _ = test_head(request).await;
 }
 
-async fn test_get_request<R: HarborRequest>(request: R) -> R::Response {
+async fn test_get<R: HarborRequest>(request: R) -> R::Response {
     test_request(request, Method::GET).await
 }
 
-async fn test_head_request<R: HarborRequest>(request: R) -> R::Response {
+async fn test_head<R: HarborRequest>(request: R) -> R::Response {
     test_request(request, Method::HEAD).await
 }
 
