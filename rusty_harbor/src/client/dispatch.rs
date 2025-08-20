@@ -15,7 +15,7 @@ macro_rules! http_method_fn {
             request: R,
         ) -> Result<R::Response, ClientError> {
             let request_builder = self.request($method, request)?;
-            let response = self.dispatch::<R>(request_builder).await?;
+            let response = self.dispatch(request_builder).await?;
             deserialize_response($method, response).await
         }
     };
@@ -61,10 +61,7 @@ impl HarborClient {
     /// Then it sends the request using basic authorization with
     /// [`username`](HarborClient::username) and [`password`](HarborClient::password), check if the
     /// response is OK and (if so) deserialize it into type `T`.
-    async fn dispatch<R: HarborRequest>(
-        &self,
-        request: RequestBuilder,
-    ) -> Result<Response, ClientError> {
+    async fn dispatch(&self, request: RequestBuilder) -> Result<Response, ClientError> {
         // Send the request and wait for the response
         let response = request.send().await?;
 

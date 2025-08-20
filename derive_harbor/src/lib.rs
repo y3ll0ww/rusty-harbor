@@ -37,10 +37,10 @@ fn derive_harbor_impl(input: DeriveInput) -> Result<proc_macro2::TokenStream, sy
                 Ok(())
             });
         }
-        if attr.path().is_ident("response") {
-            if let Ok(ty) = attr.parse_args::<Type>() {
-                response_type = Some(ty);
-            }
+        if attr.path().is_ident("response")
+            && let Ok(ty) = attr.parse_args::<Type>()
+        {
+            response_type = Some(ty);
         }
     }
 

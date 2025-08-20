@@ -4,10 +4,16 @@ use reqwest::Method;
 use crate::{
     client::HarborClient,
     request::{
-        v2::{health::get::GetHealth, project::{
-            get::{GetProjectArtifacts, GetProjectSummary, GetProjects},
-            head::HeadProjects,
-        }, search::get::GetSearch, statistics::get::GetStatistics}, HarborRequest
+        HarborRequest,
+        v2::{
+            health::get::GetHealth,
+            project::{
+                get::{GetProjectArtifacts, GetProjectSummary, GetProjects},
+                head::HeadProjects,
+            },
+            search::get::GetSearch,
+            statistics::get::GetStatistics,
+        },
     },
 };
 
@@ -86,7 +92,7 @@ async fn test_head<R: HarborRequest>(request: R) -> R::Response {
 async fn test_request<R: HarborRequest>(request: R, method: Method) -> R::Response {
     // Initialize a default client (using valid .env credentials)
     let client = HarborClient::default();
-println!("1");
+    println!("1");
     // Send the request and deserialize the response
     let response = match method {
         Method::DELETE => client.delete(request).await,
