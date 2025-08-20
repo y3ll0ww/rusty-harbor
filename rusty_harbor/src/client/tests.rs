@@ -13,7 +13,7 @@ use crate::{
 };
 
 /// Name of the project to be used in below integration tests
-const PROJECT_NAME: &str = "att_hardware";
+const PROJECT_NAME: &str = "<PROJECT_NAME>";
 
 #[test]
 fn harbor_client_can_be_initialized_with_different_credentials() {
