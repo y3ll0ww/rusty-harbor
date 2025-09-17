@@ -8,28 +8,28 @@ use crate::request::{
 const PROJECT_NAME: &str = "some-project-name";
 
 #[test]
-fn get_project_request() {
-    let request = GetProject {
-        project_name_or_id: PROJECT_NAME.to_string(),
-    };
+fn get_project_request_with_builder() {
+    let request = GetProject::builder(PROJECT_NAME.to_string())
+        .build()
+        .unwrap();
     let expected_url_encoded = format!("projects/{PROJECT_NAME}");
     assert_eq!(expected_url_encoded, request.to_url())
 }
 
 #[test]
-fn get_project_deletable_request() {
-    let request = GetProjectDeletable {
-        project_name_or_id: PROJECT_NAME.to_string(),
-    };
+fn get_project_deletable_request_with_builder() {
+    let request = GetProjectDeletable::builder(PROJECT_NAME.to_string())
+        .build()
+        .unwrap();
     let expected_url_encoded = format!("projects/{PROJECT_NAME}/_deletable");
     assert_eq!(expected_url_encoded, request.to_url())
 }
 
 #[test]
-fn get_project_summary_request() {
-    let request = GetProjectSummary {
-        project_name_or_id: PROJECT_NAME.to_string(),
-    };
+fn get_project_summary_request_with_builder() {
+    let request = GetProjectSummary::builder(PROJECT_NAME.to_string())
+        .build()
+        .unwrap();
     let expected_url_encoded = format!("projects/{PROJECT_NAME}/summary");
     assert_eq!(expected_url_encoded, request.to_url())
 }

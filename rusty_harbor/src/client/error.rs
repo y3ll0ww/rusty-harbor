@@ -9,6 +9,9 @@ pub enum ClientError {
     #[error("missing or invalid environment variable: {0}")]
     Environment(#[from] std::env::VarError),
 
+    #[error("{0}")]
+    Header(String),
+
     #[error("error creating the client: {0}")]
     Reqwest(#[from] reqwest::Error),
 

@@ -1,5 +1,6 @@
 use derive_builder::Builder;
 use derive_harbor::Harbor;
+use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use serde::Serialize;
 
 use crate::{
@@ -8,62 +9,92 @@ use crate::{
 };
 
 /// This endpoint returns specific project information by project ID.
-#[derive(Harbor, Serialize)]
+#[derive(Builder, Harbor, Serialize)]
+#[builder(setter(into, strip_option), pattern = "owned")]
 #[harbor(
     url = "projects/{project_name_or_id}",
     response = Project,
 )]
 pub struct GetProject {
+    /// An unique ID for the request.
+    #[builder(default)]
+    #[header(rename = "X-Request-Id")]
+    pub request_id: Option<String>,
+    /// The flag to indicate whether the parameter which supports both name and id in the path is
+    /// the name of the resource. When the X-Is-Resource-Name is false and the parameter can be
+    /// converted to an integer, the parameter will be as an id, otherwise, it will be as a name.
+    /// Default value: false
+    #[builder(default)]
+    #[header(rename = "X-Is-Resource-Name")]
+    pub is_resource_name: Option<bool>,
     /// The name or id of the project.
     #[serde(skip)]
     pub project_name_or_id: String,
 }
 
 impl GetProject {
-    pub fn new(project_name_or_id: impl Into<String>) -> Self {
-        GetProject {
-            project_name_or_id: project_name_or_id.into(),
-        }
+    pub fn builder(project_name_or_id: impl Into<String>) -> GetProjectBuilder {
+        GetProjectBuilder::default().project_name_or_id(project_name_or_id)
     }
 }
 
 /// Get the deletable status of the project.
-#[derive(Harbor, Serialize)]
+#[derive(Builder, Harbor, Serialize)]
+#[builder(setter(into, strip_option), pattern = "owned")]
 #[harbor(
     url = "projects/{project_name_or_id}/_deletable",
     response = ProjectDeletable,
 )]
 pub struct GetProjectDeletable {
+    /// An unique ID for the request.
+    #[builder(default)]
+    #[header(rename = "X-Request-Id")]
+    pub request_id: Option<String>,
+    /// The flag to indicate whether the parameter which supports both name and id in the path is
+    /// the name of the resource. When the X-Is-Resource-Name is false and the parameter can be
+    /// converted to an integer, the parameter will be as an id, otherwise, it will be as a name.
+    /// Default value: false
+    #[builder(default)]
+    #[header(rename = "X-Is-Resource-Name")]
+    pub is_resource_name: Option<bool>,
     /// The name or id of the project.
     #[serde(skip)]
     pub project_name_or_id: String,
 }
 
 impl GetProjectDeletable {
-    pub fn new(project_name_or_id: impl Into<String>) -> Self {
-        GetProjectDeletable {
-            project_name_or_id: project_name_or_id.into(),
-        }
+    pub fn builder(project_name_or_id: impl Into<String>) -> GetProjectDeletableBuilder {
+        GetProjectDeletableBuilder::default().project_name_or_id(project_name_or_id)
     }
 }
 
 /// Get summary of the project.
-#[derive(Harbor, Serialize)]
+#[derive(Builder, Harbor, Serialize)]
+#[builder(setter(into, strip_option), pattern = "owned")]
 #[harbor(
     url = "projects/{project_name_or_id}/summary",
     response = ProjectSummary,
 )]
 pub struct GetProjectSummary {
+    /// An unique ID for the request.
+    #[builder(default)]
+    #[header(rename = "X-Request-Id")]
+    pub request_id: Option<String>,
+    /// The flag to indicate whether the parameter which supports both name and id in the path is
+    /// the name of the resource. When the X-Is-Resource-Name is false and the parameter can be
+    /// converted to an integer, the parameter will be as an id, otherwise, it will be as a name.
+    /// Default value: false
+    #[builder(default)]
+    #[header(rename = "X-Is-Resource-Name")]
+    pub is_resource_name: Option<bool>,
     /// The name or id of the project.
     #[serde(skip)]
     pub project_name_or_id: String,
 }
 
 impl GetProjectSummary {
-    pub fn new(project_name_or_id: impl Into<String>) -> Self {
-        GetProjectSummary {
-            project_name_or_id: project_name_or_id.into(),
-        }
+    pub fn builder(project_name_or_id: impl Into<String>) -> GetProjectSummaryBuilder {
+        GetProjectSummaryBuilder::default().project_name_or_id(project_name_or_id)
     }
 }
 
@@ -75,6 +106,28 @@ impl GetProjectSummary {
     response = Vec<Artifact>,
 )]
 pub struct GetProjectArtifacts {
+    /// An unique ID for the request.
+    #[builder(default)]
+    #[header(rename = "X-Request-Id")]
+    pub request_id: Option<String>,
+    /// The flag to indicate whether the parameter which supports both name and id in the path is
+    /// the name of the resource. When the X-Is-Resource-Name is false and the parameter can be
+    /// converted to an integer, the parameter will be as an id, otherwise, it will be as a name.
+    /// Default value: false
+    #[builder(default)]
+    #[header(rename = "X-Is-Resource-Name")]
+    pub is_resource_name: Option<bool>,
+    /// A comma-separated lists of MIME types for the scan report or scan summary. The first mime
+    /// type will be used when the report found for it.
+    ///
+    /// Currently the mime type supports 'application/vnd.scanner.adapter.vuln.report.harbor+json;
+    /// version=1.0' and 'application/vnd.security.vulnerability.report; version=1.1'
+    ///
+    /// Default value: application/vnd.security.vulnerability.report; version=1.1,
+    /// application/vnd.scanner.adapter.vuln.report.harbor+json; version=1.0
+    #[builder(default)]
+    #[header(rename = "X-Accept-Vulnerabilities")]
+    pub accept_vulnerabilities: Option<String>,
     /// The name or id of the project.
     #[serde(skip)]
     pub project_name_or_id: String,
@@ -85,8 +138,7 @@ pub struct GetProjectArtifacts {
     /// query patterns should be put in the query string "q=xxx" and splitted by ",". e.g.
     /// q=k1=v1,k2=~v2,k3=[min~max].
     #[builder(default)]
-    #[serde(rename = "q")]
-    pub query: Option<String>,
+    pub q: Option<String>,
     /// Sort the resource list in ascending or descending order. e.g. sort by field1 in ascending
     /// order and field2 in descending order with "sort=field1,-field2".
     #[builder(default)]
@@ -148,6 +200,10 @@ impl GetProjectArtifacts {
     response = Vec<Project>,
 )]
 pub struct GetProjects {
+    /// An unique ID for the request.
+    #[builder(default)]
+    #[header(rename = "X-Request-Id")]
+    pub request_id: Option<String>,
     /// Query string to query resources. Supported query patterns are "exact match(k=v)",
     /// "fuzzy match(k=~v)", "range(k=[min~max])", "list with union releationship(k={v1 v2 v3})"
     /// and "list with intersetion relationship(k=(v1 v2 v3))". The value of range and list can be
@@ -155,8 +211,7 @@ pub struct GetProjects {
     /// query patterns should be put in the query string "q=xxx" and splitted by ",". e.g.
     /// q=k1=v1,k2=~v2,k3=[min~max].
     #[builder(default)]
-    #[serde(rename = "q")]
-    pub query: Option<String>,
+    pub q: Option<String>,
     /// The page number.
     /// Default value: `1`
     #[builder(default)]
